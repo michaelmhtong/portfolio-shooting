@@ -15,6 +15,11 @@ class Player {
     this.y = y;
     this.radius = radius;
     this.color = color;
+    this.velocity = {
+      x: 0,
+      y: 0,
+    };
+    this.friction = 1;
   }
   draw() {
     c.beginPath();
@@ -24,7 +29,34 @@ class Player {
   }
 
   update() {
+    // Draw the player on the canvas
     this.draw();
+
+    // Check if the player's new x position is within the bounds of the canvas
+    if (
+      (this.x - this.radius + this.velocity.x > 0 || this.velocity.x > 0) &&
+      (this.x + this.radius + this.velocity.x < canvas.width || this.velocity.x < 0)
+    ) {
+      // If within bounds, update the player's x position
+      this.x = this.x + this.velocity.x;
+    } else {
+      // If outside bounds, set the velocity to 0 to prevent the player from moving off the canvas
+      this.velocity.x = 0;
+    }
+
+    // Check if the player's new y position is within the bounds of the canvas
+    if (
+      (this.y - this.radius + this.velocity.y > 0 || this.velocity.y > 0) &&
+      (this.y + this.radius + this.velocity.y < canvas.height || this.velocity.y < 0)
+    ) {
+      // If within bounds, update the player's y position
+      this.y = this.y + this.velocity.y;
+    } else {
+      // If outside bounds, set the velocity to 0 to prevent the player from moving off the canvas
+      this.velocity.y = 0;
+    }
+
+    // Update the player's position by adding the velocity to the x and y position
     this.x = this.x + this.velocity.x;
     this.y = this.y + this.velocity.y;
   }
@@ -149,7 +181,7 @@ function animate() {
   animationId = requestAnimationFrame(animate);
   c.fillStyle = "rgba(0,0,0,0.1)";
   c.fillRect(0, 0, canvas.width, canvas.height);
-  player.draw();
+  player.update();
 
   particles.forEach((particle, index) => {
     if (particle.alpha <= 0) {
@@ -229,12 +261,24 @@ function animate() {
 }
 
 addEventListener("click", (event) => {
-  const angle = Math.atan2(event.clientY - canvas.height / 2, event.clientX - canvas.width / 2);
+  const angle = Math.atan2(event.clientY - player.y, event.clientX - player.x);
   const velocity = {
     x: Math.cos(angle) * 5,
     y: Math.sin(angle) * 5,
   };
-  projectiles.push(new Projectile(canvas.width / 2, canvas.height / 2, 5, "white", velocity));
+  projectiles.push(new Projectile(player.x, player.y, 5, "white", velocity));
+});
+
+addEventListener("keydown", ({ key }) => {
+  if (key === "w") {
+    player.velocity.y -= 1;
+  } else if (key === "a") {
+    player.velocity.x -= 1;
+  } else if (key === "s") {
+    player.velocity.y += 1;
+  } else if (key === "d") {
+    player.velocity.x += 1;
+  }
 });
 
 startGameBtn.addEventListener("click", () => {
