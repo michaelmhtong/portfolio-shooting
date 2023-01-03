@@ -1,5 +1,6 @@
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
+const scoreEl = document.querySelector("#scoreEl");
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
@@ -130,6 +131,7 @@ function spawnEnemies() {
 }
 
 let animationId;
+let score = 0;
 function animate() {
   animationId = requestAnimationFrame(animate);
   c.fillStyle = "rgba(0,0,0,0.1)";
@@ -174,6 +176,10 @@ function animate() {
 
       // when projectiles touch enemy
       if (projecttileDist - enemy.radius - projectile.radius < 1) {
+        // increase the score
+        score += 100;
+        scoreEl.innerHTML = score;
+
         // create explosions
         for (let i = 0; i < enemy.radius * 2; i++) {
           particles.push(
@@ -193,6 +199,9 @@ function animate() {
             projectiles.splice(projectileIndex, 1);
           }, 0);
         } else {
+          // remove from scene altogether
+          score += 250;
+          scoreEl.innerHTML = score;
           setTimeout(() => {
             // get rid of the flash animation
             enemies.splice(index, 1);
