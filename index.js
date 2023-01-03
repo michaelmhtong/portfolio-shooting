@@ -4,10 +4,36 @@ let enemies = [];
 
 function setup() {
   createCanvas(innerWidth, innerHeight);
+  frameRate(60);
   const x = width / 2;
   const y = height / 2;
   player = new Player(x, y, 30, "blue");
   spawnEnemies();
+}
+
+function draw() {
+  background(0);
+
+  player.update();
+  projectiles.forEach((projectile) => {
+    projectile.update();
+  });
+  enemies.forEach((enemy, index) => {
+    enemy.update();
+    const enemyDist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+    // end game
+    if (enemyDist - enemy.radius - player.radius < 1) {
+      noLoop();
+    }
+
+    projectiles.forEach((projectile, projectileIndex) => {
+      const projectileDist = Math.hypot(enemy.x - projectile.x, enemy.y - projectile.y);
+      if (projectileDist - projectile.radius - enemy.radius < 1) {
+        enemies.splice(index, 1);
+        projectiles.splice(projectileIndex, 1);
+      }
+    });
+  });
 }
 
 class Player {
@@ -17,7 +43,8 @@ class Player {
     this.radius = radius;
     this.color = color;
   }
-  draw() {
+
+  update() {
     fill(this.color);
     ellipse(this.x, this.y, this.radius * 2, this.radius * 2);
   }
@@ -31,13 +58,9 @@ class Projectile {
     this.color = color;
     this.velocity = velocity;
   }
-  draw() {
+  update() {
     fill(this.color);
     ellipse(this.x, this.y, this.radius * 2, this.radius * 2);
-  }
-
-  update() {
-    this.draw();
     this.x = this.x + this.velocity.x;
     this.y = this.y + this.velocity.y;
   }
@@ -51,13 +74,9 @@ class Enemy {
     this.color = color;
     this.velocity = velocity;
   }
-  draw() {
+  update() {
     fill(this.color);
     ellipse(this.x, this.y, this.radius * 2, this.radius * 2);
-  }
-
-  update() {
-    this.draw();
     this.x = this.x + this.velocity.x;
     this.y = this.y + this.velocity.y;
   }
@@ -80,17 +99,6 @@ function spawnEnemies() {
     const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
     enemies.push(new Enemy(x, y, radius, color, velocity));
   }, 1000);
-}
-
-function draw() {
-  background(0);
-  player.draw();
-  projectiles.forEach((projectile) => {
-    projectile.update();
-  });
-  enemies.forEach((enemy) => {
-    enemy.update();
-  });
 }
 
 function mousePressed() {
