@@ -101,6 +101,11 @@ class Enemy {
 
   update() {
     this.draw();
+    const angle = Math.atan2(player.y - this.y, player.x - this.x);
+    this.velocity = {
+      x: Math.cos(angle),
+      y: Math.sin(angle),
+    };
     this.x = this.x + this.velocity.x;
     this.y = this.y + this.velocity.y;
   }
