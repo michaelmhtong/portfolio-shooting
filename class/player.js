@@ -118,9 +118,16 @@ class Player {
     return false;
   }
 
-  collidesWith(mob) {
-    return collideCircleCircle(this.pos.x, this.pos.y, this.radius, mob.pos.x, mob.pos.y, mob.radius);
-  }
+  // collidesWith(mob) {
+  //   return collideCircleCircle(
+  //     this.pos.x,
+  //     this.pos.y,
+  //     this.radius,
+  //     mob.pos.x,
+  //     mob.pos.y,
+  //     mob.radius
+  //   );
+  // }
 
   isInViewField(x, y, radius) {
     for (let ray of this.rays) {
@@ -131,5 +138,14 @@ class Player {
       }
     }
     return false;
+  }
+
+  shoot(mouse) {
+    const angle = Math.atan2(mouse.y - this.pos.y, mouse.x - this.pos.x);
+    const velocity = {
+      x: Math.cos(angle) * 5,
+      y: Math.sin(angle) * 5,
+    };
+    projectiles.push(new Projectile(this.pos.x, this.pos.y, 5, "white", velocity));
   }
 }

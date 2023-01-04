@@ -52,6 +52,16 @@ function draw() {
   player.update(walls);
   player.show();
 
+  // Check if mouseIsPressed and shoot 6 times every second
+  if (mouseIsPressed && frameCount % 20 == 0) {
+    player.shoot({ x: mouseX, y: mouseY });
+  }
+
+  // Check if the mouse has moved
+  if (mouseX !== pmouseX || mouseY !== pmouseY) {
+    player.lookAt(mouseX, mouseY);
+  }
+
   projectiles.forEach((projectile, index) => {
     projectile.update();
 
@@ -201,16 +211,6 @@ function spawnEnemies() {
     const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
     enemies.push(new Enemy(x, y, radius, color, velocity));
   }, 2000);
-}
-
-function mousePressed() {
-  const angle = Math.atan2(event.clientY - player.pos.y, event.clientX - player.pos.x);
-  const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
-  projectiles.push(new Projectile(player.pos.x, player.pos.y, 5, "white", velocity));
-}
-
-function mouseMoved() {
-  player.lookAt(mouseX, mouseY);
 }
 
 startGameBtn.addEventListener("click", function () {
